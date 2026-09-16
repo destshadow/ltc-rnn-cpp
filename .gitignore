@@ -1,5 +1,6 @@
 # Build output
 main
+temporal_order_test
 stato
 rnn
 *.exe

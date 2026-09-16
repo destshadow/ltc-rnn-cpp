@@ -24,6 +24,14 @@ make run
 
 `make clean` rimuove l'eseguibile generato.
 
+Per compilare ed eseguire il test dell'ordine temporale:
+
+```bash
+make test
+```
+
+Il test allena la rete sulle due sequenze dell'esempio e controlla che le relative predizioni superino le soglie `0.8` e `-0.8`. I pesi iniziali sono casuali e il test non verifica sequenze mai viste durante l'addestramento.
+
 ## Come funziona l'esempio
 
 `main.cpp` crea una `LTCNetwork` con un livello LTC da sei neuroni e un'uscita densa. Allena la rete sulla sequenza `[0.1, 0.3, 0.5, 0.7]` verso il target `1` e sulla sequenza inversa verso `-1`, mostrando periodicamente le predizioni e la perdita media.
