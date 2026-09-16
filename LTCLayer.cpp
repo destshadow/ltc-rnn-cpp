@@ -292,6 +292,28 @@ std::vector<Vector> LTCLayer::backward(
         return {};
     }
 
+    for (const Vector& gradient : outputGradients) {
+        if (gradient.size() != hiddenSize) {
+            throw std::invalid_argument(
+                "Invalid LTC output gradient size"
+            );
+        }
+    }
+
+    Matrix tauInputWeightGradients(
+        hiddenSize,
+        inputSize
+    );
+
+    Matrix tauRecurrentWeightGradients(
+        hiddenSize,
+        hiddenSize
+    );
+
+    Vector tauBiasGradients(
+        hiddenSize
+    );
+
     Matrix inputWeightGradients(
         hiddenSize,
         inputSize
@@ -346,6 +368,10 @@ std::vector<Vector> LTCLayer::backward(
             hiddenSize
         );
 
+        Vector tauGradient(
+            hiddenSize
+        );
+
         for (
             std::size_t i = 0;
             i < hiddenSize;
@@ -355,6 +381,14 @@ std::vector<Vector> LTCLayer::backward(
             stateGradient[i] =
                 outputGradients[t][i]
                 + futureStateGradient[i];
+
+            const double difference =
+                cache.target[i]
+                - cache.previousState[i];
+
+            tauGradient[i] =
+                -stateGradient[i] * dt * difference
+                / (cache.tau[i] * cache.tau[i]);
         }
 
 
@@ -395,6 +429,17 @@ std::vector<Vector> LTCLayer::backward(
                 * tanhGradient;
         }
 
+        Vector tauCombinedGradient(hiddenSize);
+
+        for (std::size_t i = 0; i < hiddenSize; ++i) {
+            const double sigmoidValue = cache.tau[i] - 1.0;
+            const double sigmoidDerivative =
+                sigmoidValue * (1.0 - sigmoidValue);
+
+            tauCombinedGradient[i] =
+                tauGradient[i] * sigmoidDerivative;
+        }
+
         for (
             std::size_t neuron = 0;
             neuron < hiddenSize;
@@ -413,6 +458,10 @@ std::vector<Vector> LTCLayer::backward(
                 ) +=
                     combinedGradient[neuron]
                     * cache.input[input];
+
+                tauInputWeightGradients(neuron, input) +=
+                    tauCombinedGradient[neuron]
+                    * cache.input[input];
             }
 
 
@@ -430,11 +479,18 @@ std::vector<Vector> LTCLayer::backward(
                     * cache.previousState[
                         previousNeuron
                     ];
+
+                tauRecurrentWeightGradients(neuron, previousNeuron) +=
+                    tauCombinedGradient[neuron]
+                    * cache.previousState[previousNeuron];
             }
 
 
             biasGradients[neuron] +=
                 combinedGradient[neuron];
+
+            tauBiasGradients[neuron] +=
+                tauCombinedGradient[neuron];
         }
 
 
@@ -460,6 +516,10 @@ std::vector<Vector> LTCLayer::backward(
                     * combinedGradient[
                         neuron
                     ];
+
+                gradient +=
+                    tauInputWeights(neuron, input)
+                    * tauCombinedGradient[neuron];
             }
 
             inputGradients[t][input] =
@@ -509,6 +569,10 @@ std::vector<Vector> LTCLayer::backward(
                     * combinedGradient[
                         neuron
                     ];
+
+                previousStateGradient[previousNeuron] +=
+                    tauRecurrentWeights(neuron, previousNeuron)
+                    * tauCombinedGradient[neuron];
             }
         }
 
@@ -529,16 +593,17 @@ std::vector<Vector> LTCLayer::backward(
             input < inputSize;
             ++input
         ) {
+            const double gradient = clipGradient(
+                inputWeightGradients(neuron, input), 1.0
+            );
+            inputWeights(neuron, input) -=
+                learningRate * gradient;
 
-            inputWeights(
-                neuron,
-                input
-            ) -=
-                learningRate
-                * inputWeightGradients(
-                    neuron,
-                    input
-                );
+            const double tauGradient = clipGradient(
+                tauInputWeightGradients(neuron, input), 1.0
+            );
+            tauInputWeights(neuron, input) -=
+                learningRate * tauGradient;
         }
 
 
@@ -548,23 +613,43 @@ std::vector<Vector> LTCLayer::backward(
             ++previousNeuron
         ) {
 
-            recurrentWeights(
-                neuron,
-                previousNeuron
-            ) -=
-                learningRate
-                * recurrentWeightGradients(
-                    neuron,
-                    previousNeuron
-                );
+            const double gradient = clipGradient(
+                recurrentWeightGradients(neuron, previousNeuron), 1.0
+            );
+            recurrentWeights(neuron, previousNeuron) -=
+                learningRate * gradient;
+
+            const double tauGradient = clipGradient(
+                tauRecurrentWeightGradients(neuron, previousNeuron), 1.0
+            );
+            tauRecurrentWeights(neuron, previousNeuron) -=
+                learningRate * tauGradient;
         }
 
-
-        bias[neuron] -=
-            learningRate
-            * biasGradients[neuron];
+        bias[neuron] -= learningRate * clipGradient(
+            biasGradients[neuron], 1.0
+        );
+        tauBias[neuron] -= learningRate * clipGradient(
+            tauBiasGradients[neuron], 1.0
+        );
     }
 
 
     return inputGradients;
+}
+
+double LTCLayer::clipGradient(
+    double gradient,
+    double limit
+) const {
+
+    if (gradient > limit) {
+        return limit;
+    }
+
+    if (gradient < -limit) {
+        return -limit;
+    }
+
+    return gradient;
 }

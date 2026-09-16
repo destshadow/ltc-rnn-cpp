@@ -53,6 +53,11 @@ private:
         const Vector& tau
     ) const;
 
+    double clipGradient(
+        double gradient,
+        double limit
+    ) const;
+
 public:
 
     LTCLayer(
