@@ -2,7 +2,7 @@
 
 Un piccolo progetto didattico in C++17 per esplorare neuroni con stato, reti ricorrenti e una semplice dinamica ispirata ai *Liquid Time-Constant networks* (LTC).
 
-Il programma attuale mostra l'addestramento del livello denso di uscita di una `LTCNetwork` con due input, quattro neuroni LTC e un output. Il progetto contiene anche un neurone `LTCNeuron`, un livello `LTCLayer`, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
+Il programma attuale mostra come una `LTCLayer` registra la cronologia dei passi. Il progetto contiene anche un neurone `LTCNeuron`, una `LTCNetwork` che combina più livelli LTC, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
 
 > Progetto sperimentale: `trainStep` aggiorna solo il livello denso di uscita; non addestra i livelli LTC né gestisce dataset.
 
@@ -26,9 +26,9 @@ make run
 
 ## Come funziona l'esempio
 
-`main.cpp` crea una `LTCNetwork` con un livello LTC da quattro neuroni e un livello denso di uscita. Usa l'input `[1, 0.5]` e l'obiettivo `0.8`. Per cento epoche azzera lo stato ricorrente, calcola la perdita quadratica media e aggiorna i pesi e il bias del livello denso con `trainStep`.
+`main.cpp` crea una `LTCLayer` con un input e tre neuroni. Esegue dieci passi con input da `0` a `0.9` e stampa quanti passi sono stati registrati nella cronologia dopo ogni chiamata a `forward`.
 
-La perdita diminuisce e la predizione finale si avvicina all'obiettivo. `LTCNetwork` permette anche di concatenare più livelli LTC con dimensioni compatibili.
+`LTCNetwork` permette di concatenare più livelli LTC con dimensioni compatibili e di aggiungere un livello denso di uscita opzionale. Il suo `trainStep` aggiorna solo il livello denso di uscita.
 
 Ogni chiamata a `LTCLayer::forward` registra i dati del passo nella cronologia del livello. `clearHistory()` la svuota; `LTCNetwork::resetSequence()` azzera sia gli stati ricorrenti sia le cronologie dei livelli. La cronologia non viene ancora usata per aggiornare i pesi LTC.
 
@@ -36,7 +36,7 @@ Ogni chiamata a `LTCLayer::forward` registra i dati del passo nella cronologia d
 
 | File | Contenuto |
 | --- | --- |
-| `main.cpp` | Esempio di addestramento dell'uscita di `LTCNetwork` |
+| `main.cpp` | Esempio della cronologia dei passi di `LTCLayer` |
 | `DenseLayer.hpp/.cpp` | Livello denso con forward e aggiornamento dei parametri |
 | `Loss.hpp/.cpp` | Perdita quadratica media e relativo gradiente |
 | `LTCNetwork.hpp/.cpp` | Sequenza di livelli LTC con uscita densa opzionale |
