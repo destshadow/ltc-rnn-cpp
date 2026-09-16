@@ -2,9 +2,9 @@
 
 Un piccolo progetto didattico in C++17 per esplorare neuroni con stato, reti ricorrenti e una semplice dinamica ispirata ai *Liquid Time-Constant networks* (LTC).
 
-Il programma attuale mostra un semplice addestramento di una `DenseLayer` con due input e un output. Il progetto contiene anche un neurone `LTCNeuron`, un livello `LTCLayer`, una `LTCNetwork` che combina più livelli LTC, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
+Il programma attuale mostra l'addestramento del livello denso di uscita di una `LTCNetwork` con due input, quattro neuroni LTC e un output. Il progetto contiene anche un neurone `LTCNeuron`, un livello `LTCLayer`, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
 
-> Progetto sperimentale: l'esempio addestra solo una `DenseLayer`; non include ancora l'addestramento dei livelli LTC o la gestione di dataset.
+> Progetto sperimentale: `trainStep` aggiorna solo il livello denso di uscita; non addestra i livelli LTC né gestisce dataset.
 
 ## Compilazione ed esecuzione
 
@@ -26,15 +26,15 @@ make run
 
 ## Come funziona l'esempio
 
-`main.cpp` crea una `DenseLayer` con due input e un output. Imposta entrambi i pesi a `0.5`, il bias a `0`, l'input a `[1, 1]` e l'obiettivo a `2`. Per venti epoche calcola la predizione, la perdita quadratica media e il suo gradiente, poi aggiorna pesi e bias con `backward`.
+`main.cpp` crea una `LTCNetwork` con un livello LTC da quattro neuroni e un livello denso di uscita. Usa l'input `[1, 0.5]` e l'obiettivo `0.8`. Per cento epoche azzera lo stato ricorrente, calcola la perdita quadratica media e aggiorna i pesi e il bias del livello denso con `trainStep`.
 
-La predizione parte da `1` e si avvicina a `2`, mentre la perdita diminuisce. `LTCNetwork` permette di concatenare più livelli LTC con dimensioni compatibili e di aggiungere un livello denso di uscita opzionale.
+La perdita diminuisce e la predizione finale si avvicina all'obiettivo. `LTCNetwork` permette anche di concatenare più livelli LTC con dimensioni compatibili.
 
 ## Struttura
 
 | File | Contenuto |
 | --- | --- |
-| `main.cpp` | Esempio di addestramento del livello denso |
+| `main.cpp` | Esempio di addestramento dell'uscita di `LTCNetwork` |
 | `DenseLayer.hpp/.cpp` | Livello denso con forward e aggiornamento dei parametri |
 | `Loss.hpp/.cpp` | Perdita quadratica media e relativo gradiente |
 | `LTCNetwork.hpp/.cpp` | Sequenza di livelli LTC con uscita densa opzionale |

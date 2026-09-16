@@ -35,6 +35,12 @@ public:
         const Vector& input
     );
 
+    double trainStep(
+        const Vector& input,
+        const Vector& target,
+        double learningRate
+    );
+
     void resetState();
 
     std::size_t layerCount() const;

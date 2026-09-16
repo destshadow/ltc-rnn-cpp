@@ -1,4 +1,5 @@
 #include "LTCNetwork.hpp"
+#include "Loss.hpp"
 
 #include <stdexcept>
 
@@ -98,3 +99,45 @@ void LTCNetwork::setOutputLayer(
     );
 }
 
+double LTCNetwork::trainStep(
+    const Vector& input,
+    const Vector& target,
+    double learningRate
+) {
+
+    if (!outputLayer.has_value()) {
+
+        throw std::runtime_error(
+            "LTCNetwork has no output layer"
+        );
+    }
+
+
+    Vector prediction =
+        forward(input);
+
+
+    double loss =
+        Loss::meanSquaredError(
+            prediction,
+            target
+        );
+
+
+    Vector lossGradient =
+        Loss::meanSquaredErrorGradient(
+            prediction,
+            target
+        );
+
+
+    Vector gradientToLTC =
+        outputLayer->backward(
+            lossGradient,
+            learningRate
+        );
+
+        (void)gradientToLTC;
+
+    return loss;
+}

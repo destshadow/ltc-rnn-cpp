@@ -1,87 +1,84 @@
 #include <iostream>
 
-#include "DenseLayer.hpp"
-#include "Loss.hpp"
+#include "LTCNetwork.hpp"
+
 
 int main() {
 
-    DenseLayer layer(
+    LTCNetwork network;
+
+
+    network.addLayer(
         2,
+        4,
+        0.05
+    );
+
+
+    network.setOutputLayer(
         1
-    );
-
-    layer.setWeight(
-        0,
-        0,
-        0.5
-    );
-
-    layer.setWeight(
-        0,
-        1,
-        0.5
-    );
-
-    layer.setBias(
-        0,
-        0.0
     );
 
 
     Vector input(2);
 
     input[0] = 1.0;
-    input[1] = 1.0;
+    input[1] = 0.5;
 
 
     Vector target(1);
 
-    target[0] = 2.0;
+    target[0] = 0.8;
 
 
     double learningRate =
-        0.1;
+        0.01;
 
 
     for (
         int epoch = 0;
-        epoch < 20;
+        epoch < 100;
         ++epoch
     ) {
 
-        Vector prediction =
-            layer.forward(input);
-
+        network.resetState();
 
         double loss =
-            Loss::meanSquaredError(
-                prediction,
-                target
+            network.trainStep(
+                input,
+                target,
+                learningRate
             );
 
 
-        Vector lossGradient =
-            Loss::meanSquaredErrorGradient(
-                prediction,
-                target
-            );
+        if (epoch % 10 == 0) {
 
-
-        layer.backward(
-            lossGradient,
-            learningRate
-        );
-
-
-        std::cout
-            << "Epoch "
-            << epoch
-            << " | prediction = "
-            << prediction[0]
-            << " | loss = "
-            << loss
-            << '\n';
+            std::cout
+                << "Epoch "
+                << epoch
+                << " | Loss = "
+                << loss
+                << '\n';
+        }
     }
+
+
+    network.resetState();
+
+    Vector prediction =
+        network.forward(input);
+
+
+    std::cout
+        << "\nFinal prediction: "
+        << prediction[0]
+        << '\n';
+
+    std::cout
+        << "Target: "
+        << target[0]
+        << '\n';
+
 
     return 0;
 }
