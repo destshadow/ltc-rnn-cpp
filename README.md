@@ -2,9 +2,9 @@
 
 Un piccolo progetto didattico in C++17 per esplorare neuroni con stato, reti ricorrenti e una semplice dinamica ispirata ai *Liquid Time-Constant networks* (LTC).
 
-Il programma attuale addestra una `LTCNetwork` su una sequenza crescente. Il progetto contiene anche un neurone `LTCNeuron`, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
+Il programma attuale addestra una `LTCNetwork` su una sequenza crescente e una decrescente. Il progetto contiene anche un neurone `LTCNeuron`, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
 
-> Progetto sperimentale: `trainSequence` propaga gradienti attraverso i passi e aggiorna i livelli LTC e l'uscita densa. L'esempio usa una sola sequenza, quindi non misura la capacità di generalizzare.
+> Progetto sperimentale: `trainSequence` propaga gradienti attraverso i passi e aggiorna i livelli LTC e l'uscita densa. L'esempio usa solo due sequenze di addestramento, quindi non misura la capacità di generalizzare.
 
 ## Compilazione ed esecuzione
 
@@ -26,7 +26,7 @@ make run
 
 ## Come funziona l'esempio
 
-`main.cpp` crea una `LTCNetwork` con un livello LTC da quattro neuroni e un'uscita densa. Allena la rete sulla sequenza `[0.1, 0.3, 0.5, 0.7]` verso il target `1`, mostrando la loss durante l'addestramento e la predizione finale.
+`main.cpp` crea una `LTCNetwork` con un livello LTC da sei neuroni e un'uscita densa. Allena la rete sulla sequenza `[0.1, 0.3, 0.5, 0.7]` verso il target `1` e sulla sequenza inversa verso `-1`, mostrando periodicamente le predizioni e la perdita media.
 
 `LTCNetwork` permette di concatenare più livelli LTC con dimensioni compatibili e di aggiungere un livello denso di uscita opzionale. Il suo `trainStep` aggiorna solo il livello denso di uscita.
 
@@ -36,7 +36,7 @@ Ogni chiamata a `LTCLayer::forward` registra i dati del passo nella cronologia d
 
 | File | Contenuto |
 | --- | --- |
-| `main.cpp` | Esempio di addestramento su una sequenza |
+| `main.cpp` | Esempio di addestramento su due sequenze |
 | `DenseLayer.hpp/.cpp` | Livello denso con forward e aggiornamento dei parametri |
 | `Loss.hpp/.cpp` | Perdita quadratica media e relativo gradiente |
 | `Optimizer.hpp`, `SGDOptimizer.hpp/.cpp` | Interfaccia di aggiornamento dei parametri e discesa del gradiente |

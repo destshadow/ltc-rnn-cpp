@@ -4,84 +4,108 @@
 #include "LTCNetwork.hpp"
 #include "SGDOptimizer.hpp"
 
+//test 2 su due sequences, una crescente e una decrescente, con target rispettivamente 1 e -1
+
 int main() {
 
     LTCNetwork network;
 
     network.addLayer(
         1,      // input size
-        4,      // hidden neurons
-        0.05    // dt
+        6,      // hidden neurons
+        0.5    // dt /* prima era 0.05 e non andava bene ora invece è perfetto 0.5 è il numero giusto */
     );
 
     network.setOutputLayer(1);
 
-
     SGDOptimizer optimizer(0.01);
 
 
-    std::vector<Vector> sequence;
+    std::vector<Vector> increasing;
+    std::vector<Vector> decreasing;
 
 
     for (double value : {0.1, 0.3, 0.5, 0.7}) {
 
         Vector input(1);
-
         input[0] = value;
 
-        sequence.push_back(input);
+        increasing.push_back(input);
     }
 
 
-    Vector target(1);
+    for (double value : {0.7, 0.5, 0.3, 0.1}) {
 
-    target[0] = 1.0;
+        Vector input(1);
+        input[0] = value;
+
+        decreasing.push_back(input);
+    }
 
 
-    for (int epoch = 0; epoch < 1000; ++epoch) {
+    Vector targetIncreasing(1);
+    targetIncreasing[0] = 1.0;
 
-        double loss =
+    Vector targetDecreasing(1);
+    targetDecreasing[0] = -1.0;
+
+
+    for (int epoch = 0; epoch < 2000; ++epoch) {
+
+        double lossIncreasing =
             network.trainSequence(
-                sequence,
-                target,
+                increasing,
+                targetIncreasing,
+                optimizer
+            );
+
+        double lossDecreasing =
+            network.trainSequence(
+                decreasing,
+                targetDecreasing,
                 optimizer
             );
 
 
-        if (epoch % 100 == 0) {
+        if (epoch % 200 == 0) {
 
-            Vector prediction =
+            Vector predictionIncreasing =
                 network.predictSequence(
-                    sequence
+                    increasing
                 );
 
+            Vector predictionDecreasing =
+                network.predictSequence(
+                    decreasing
+                );
+
+
             std::cout
-                << "Epoch: "
+                << "Epoch "
                 << epoch
-                << " | Prediction: "
-                << prediction[0]
-                << " | Loss: "
-                << loss
                 << '\n';
+
+            std::cout
+                << "  Increasing: "
+                << predictionIncreasing[0]
+                << " | target: 1"
+                << '\n';
+
+            std::cout
+                << "  Decreasing: "
+                << predictionDecreasing[0]
+                << " | target: -1"
+                << '\n';
+
+            std::cout
+                << "  Avg loss: "
+                << (
+                    lossIncreasing
+                    + lossDecreasing
+                ) / 2.0
+                << "\n\n";
         }
     }
-
-
-    Vector finalPrediction =
-        network.predictSequence(
-            sequence
-        );
-
-
-    std::cout
-        << "\nFinal prediction: "
-        << finalPrediction[0]
-        << '\n';
-
-    std::cout
-        << "Target: "
-        << target[0]
-        << '\n';
 
 
     return 0;
