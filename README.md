@@ -44,6 +44,15 @@ Con i parametri presenti in `main.cpp`, l'input vale `1` nei primi cinque passi 
 | `Vector.hpp/.cpp` | Vettore di `double` e operazioni aritmetiche |
 | `Matrix.hpp/.cpp` | Matrice di `double` e prodotto matrice-vettore |
 | `Activation.hpp/.cpp` | Funzioni di attivazione e derivate |
+| `neurone_con_stato_interno/` | Due esempi autonomi per capire lo stato di un neurone |
+| `references/` | I due PDF di riferimento presenti nella cartella originale del progetto |
+
+Gli esempi in `neurone_con_stato_interno/` hanno ciascuno una propria funzione `main` e si compilano separatamente:
+
+```bash
+g++ -std=c++17 neurone_con_stato_interno/stato.cpp -o stato
+g++ -std=c++17 neurone_con_stato_interno/rnn.cpp -o rnn
+```
 
 ## Stato del progetto
 

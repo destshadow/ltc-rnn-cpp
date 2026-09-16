@@ -1,5 +1,7 @@
 # Build output
 main
+stato
+rnn
 *.exe
 *.o
 *.obj
