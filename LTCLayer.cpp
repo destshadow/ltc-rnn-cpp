@@ -1,6 +1,7 @@
 #include "LTCLayer.hpp"
 
 #include "Activation.hpp"
+#include "Initializer.hpp"
 
 #include <stdexcept>
 
@@ -40,6 +41,10 @@ LTCLayer::LTCLayer(
       hiddenState(hiddenSize),
 
       dt(dt) {
+    Initializer::randomize(inputWeights, -0.5, 0.5);
+    Initializer::randomize(recurrentWeights, -0.5, 0.5);
+    Initializer::randomize(tauInputWeights, -0.5, 0.5);
+    Initializer::randomize(tauRecurrentWeights, -0.5, 0.5);
 }
 
 Vector LTCLayer::computeTarget(

@@ -6,48 +6,16 @@
 int main() {
 
     LTCLayer layer(
-        1,
         2,
+        4,
         0.1
     );
 
 
-    layer.setInputWeight(
-        0, 0, 1.0
-    );
+    Vector input(2);
 
-    layer.setInputWeight(
-        1, 0, -0.7
-    );
-
-
-    layer.setRecurrentWeight(
-        0, 0, 0.5
-    );
-
-    layer.setRecurrentWeight(
-        0, 1, 0.2
-    );
-
-    layer.setRecurrentWeight(
-        1, 0, -0.1
-    );
-
-    layer.setRecurrentWeight(
-        1, 1, 0.6
-    );
-
-
-    layer.setTauInputWeight(
-        0, 0, 1.0
-    );
-
-    layer.setTauInputWeight(
-        1, 0, -1.0
-    );
-
-
-    Vector input(1);
+    input[0] = 1.0;
+    input[1] = 0.5;
 
 
     for (
@@ -56,14 +24,6 @@ int main() {
         ++step
     ) {
 
-        if (step < 5) {
-            input[0] = 1.0;
-        }
-        else {
-            input[0] = 0.0;
-        }
-
-
         Vector output =
             layer.forward(input);
 
@@ -71,13 +31,20 @@ int main() {
         std::cout
             << "Step "
             << step
-            << " | input = "
-            << input[0]
-            << " | h0 = "
-            << output[0]
-            << " | h1 = "
-            << output[1]
-            << '\n';
+            << ": ";
+
+        for (
+            std::size_t i = 0;
+            i < output.size();
+            ++i
+        ) {
+
+            std::cout
+                << output[i]
+                << " ";
+        }
+
+        std::cout << '\n';
     }
 }
 

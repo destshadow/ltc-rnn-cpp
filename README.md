@@ -2,7 +2,7 @@
 
 Un piccolo progetto didattico in C++17 per esplorare neuroni con stato, reti ricorrenti e una semplice dinamica ispirata ai *Liquid Time-Constant networks* (LTC).
 
-Il programma attuale simula una `LTCLayer` con due neuroni: riceve un impulso per i primi cinque passi e mostra come evolvono i due stati nei passi successivi. Il progetto contiene anche un neurone `LTCNeuron` singolo, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
+Il programma attuale simula una `LTCLayer` con due input e quattro neuroni, mostrando come evolvono gli stati durante venti passi con input costante. Il progetto contiene anche un neurone `LTCNeuron` singolo, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
 
 > Progetto sperimentale: il codice non include addestramento o gestione di dataset.
 
@@ -26,13 +26,13 @@ make run
 
 ## Come funziona l'esempio
 
-`main.cpp` crea una `LTCLayer` con un input e due neuroni, entrambi con stato iniziale pari a zero. A ogni passo `forward(input)`:
+`main.cpp` crea una `LTCLayer` con due input e quattro neuroni, tutti con stato iniziale pari a zero. I pesi sono inizializzati casualmente alla creazione del livello. A ogni passo `forward(input)`:
 
 1. combina l'input corrente con lo stato precedente e applica `tanh` per ottenere un valore obiettivo;
 2. calcola per ciascun neurone una costante di tempo variabile `tau = 1 + sigmoid(W_tau_x * input + W_tau_h * state + b_tau)`;
 3. aggiorna ogni stato con `state += dt * (target - state) / tau`.
 
-Con i parametri presenti in `main.cpp`, l'input vale `1` nei primi cinque passi e `0` nei successivi quindici. L'output stampa passo, input e stati `h0` e `h1`.
+Con i parametri presenti in `main.cpp`, i due input valgono sempre `1` e `0.5`. L'output stampa i quattro stati a ogni passo. I valori numerici cambiano tra esecuzioni perché l'inizializzazione dei pesi è casuale.
 
 ## Struttura
 
