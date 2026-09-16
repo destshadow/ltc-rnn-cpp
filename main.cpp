@@ -1,52 +1,38 @@
 #include <iostream>
 
-#include "LTCLayer.hpp"
-
+#include "DenseLayer.hpp"
 
 int main() {
 
-    LTCLayer layer(
-        2,
-        4,
-        0.1
-    );
+    DenseLayer layer(3, 1);
+
+    layer.setWeight(0, 0, 0.5);
+    layer.setWeight(0, 1, 0.2);
+    layer.setWeight(0, 2, -0.1);
+
+    layer.setBias(0, 0.1);
 
 
-    Vector input(2);
+    Vector input(3);
 
     input[0] = 1.0;
-    input[1] = 0.5;
+    input[1] = 2.0;
+    input[2] = 3.0;
 
 
-    for (
-        int step = 0;
-        step < 20;
-        ++step
-    ) {
-
-        Vector output =
-            layer.forward(input);
+    Vector output =
+        layer.forward(input);
 
 
-        std::cout
-            << "Step "
-            << step
-            << ": ";
+    std::cout
+        << "Output: "
+        << output[0]
+        << '\n';
 
-        for (
-            std::size_t i = 0;
-            i < output.size();
-            ++i
-        ) {
-
-            std::cout
-                << output[i]
-                << " ";
-        }
-
-        std::cout << '\n';
-    }
+    return 0;
 }
+
+//output corretto: Output: 0.7
 
 /*
 g++ -std=c++17 *.cpp -o main

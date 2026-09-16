@@ -85,7 +85,10 @@ public:
     void setTauBias(
         std::size_t neuron,
         double value
-    );
+    ); 
+
+    std::size_t getInputSize() const;
+    std::size_t getHiddenSize() const;
 
 
 };

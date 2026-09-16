@@ -242,3 +242,14 @@ void LTCLayer::setTauBias(
     tauBias[neuron] =
         value;
 }
+
+std::size_t LTCLayer::getInputSize() const {
+
+    return inputSize;
+}
+
+
+std::size_t LTCLayer::getHiddenSize() const {
+
+    return hiddenSize;
+}
