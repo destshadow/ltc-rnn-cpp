@@ -2,9 +2,9 @@
 
 Un piccolo progetto didattico in C++17 per esplorare neuroni con stato, reti ricorrenti e una semplice dinamica ispirata ai *Liquid Time-Constant networks* (LTC).
 
-Il programma attuale mostra un esempio di `DenseLayer` con tre input e un output. Il progetto contiene anche un neurone `LTCNeuron`, un livello `LTCLayer`, una `LTCNetwork` che combina più livelli LTC, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
+Il programma attuale mostra un semplice addestramento di una `DenseLayer` con due input e un output. Il progetto contiene anche un neurone `LTCNeuron`, un livello `LTCLayer`, una `LTCNetwork` che combina più livelli LTC, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
 
-> Progetto sperimentale: il codice non include addestramento o gestione di dataset.
+> Progetto sperimentale: l'esempio addestra solo una `DenseLayer`; non include ancora l'addestramento dei livelli LTC o la gestione di dataset.
 
 ## Compilazione ed esecuzione
 
@@ -26,17 +26,18 @@ make run
 
 ## Come funziona l'esempio
 
-`main.cpp` crea una `DenseLayer` con tre input e un output. Imposta i pesi a `0.5`, `0.2` e `-0.1`, il bias a `0.1` e l'input a `[1, 2, 3]`. Il risultato è `Output: 0.7`.
+`main.cpp` crea una `DenseLayer` con due input e un output. Imposta entrambi i pesi a `0.5`, il bias a `0`, l'input a `[1, 1]` e l'obiettivo a `2`. Per venti epoche calcola la predizione, la perdita quadratica media e il suo gradiente, poi aggiorna pesi e bias con `backward`.
 
-La `DenseLayer` calcola `weights * input + bias`. `LTCLayer` usa invece uno stato ricorrente e una costante di tempo variabile per ciascun neurone; `LTCNetwork` permette di concatenare più livelli LTC con dimensioni compatibili.
+La predizione parte da `1` e si avvicina a `2`, mentre la perdita diminuisce. `LTCNetwork` permette di concatenare più livelli LTC con dimensioni compatibili e di aggiungere un livello denso di uscita opzionale.
 
 ## Struttura
 
 | File | Contenuto |
 | --- | --- |
-| `main.cpp` | Esempio eseguibile del livello denso |
-| `DenseLayer.hpp/.cpp` | Livello denso con pesi, bias e prodotto matrice-vettore |
-| `LTCNetwork.hpp/.cpp` | Sequenza di livelli LTC |
+| `main.cpp` | Esempio di addestramento del livello denso |
+| `DenseLayer.hpp/.cpp` | Livello denso con forward e aggiornamento dei parametri |
+| `Loss.hpp/.cpp` | Perdita quadratica media e relativo gradiente |
+| `LTCNetwork.hpp/.cpp` | Sequenza di livelli LTC con uscita densa opzionale |
 | `LTCLayer.hpp/.cpp` | Livello ricorrente con costanti di tempo variabili |
 | `LTCNeuron.hpp/.cpp` | Neurone con stato e costante di tempo variabile |
 | `RNNLayer.hpp/.cpp` | Livello ricorrente con pesi, bias e stato nascosto |
@@ -56,4 +57,4 @@ g++ -std=c++17 neurone_con_stato_interno/rnn.cpp -o rnn
 
 ## Stato del progetto
 
-Il codice è pensato per apprendere e sperimentare. `RNNLayer` implementa un aggiornamento ricorrente con `tanh`; non usa la dinamica a costante di tempo variabile di `LTCNeuron`. Non ci sono ancora API per addestrare i pesi né controlli completi sugli indici di vettori e matrici.
+Il codice è pensato per apprendere e sperimentare. `RNNLayer` implementa un aggiornamento ricorrente con `tanh`; non usa la dinamica a costante di tempo variabile di `LTCNeuron`. Non ci sono ancora API per addestrare i pesi dei livelli LTC né controlli completi sugli indici di vettori e matrici.

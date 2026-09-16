@@ -37,18 +37,29 @@ Vector LTCNetwork::forward(
 ) {
 
     if (layers.empty()) {
+
         throw std::runtime_error(
             "LTCNetwork has no layers"
         );
     }
 
+
     Vector current = input;
+
 
     for (LTCLayer& layer : layers) {
 
         current =
             layer.forward(current);
     }
+
+
+    if (outputLayer.has_value()) {
+
+        current =
+            outputLayer->forward(current);
+    }
+
 
     return current;
 }
@@ -64,5 +75,26 @@ void LTCNetwork::resetState() {
 std::size_t LTCNetwork::layerCount() const {
 
     return layers.size();
+}
+
+void LTCNetwork::setOutputLayer(
+    std::size_t outputSize
+) {
+
+    if (layers.empty()) {
+
+        throw std::runtime_error(
+            "Cannot create output layer "
+            "without LTC layers"
+        );
+    }
+
+    std::size_t inputSize =
+        layers.back().getHiddenSize();
+
+    outputLayer.emplace(
+        inputSize,
+        outputSize
+    );
 }
 

@@ -1,16 +1,21 @@
 #pragma once
 
 #include <vector>
+#include <optional>
 #include <cstddef>
 
 #include "Vector.hpp"
 #include "LTCLayer.hpp"
+#include "DenseLayer.hpp"
 
 class LTCNetwork {
 
 private:
 
     std::vector<LTCLayer> layers;
+
+    std::optional<DenseLayer>
+        outputLayer;
 
 public:
 
@@ -20,6 +25,10 @@ public:
         std::size_t inputSize,
         std::size_t hiddenSize,
         double dt
+    );
+
+    void setOutputLayer(
+        std::size_t outputSize
     );
 
     Vector forward(

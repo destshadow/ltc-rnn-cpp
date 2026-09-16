@@ -25,14 +25,15 @@ DenseLayer::DenseLayer(
 
 Vector DenseLayer::forward(
     const Vector& input
-) const {
+) {
 
     if (input.size() != inputSize) {
-
         throw std::invalid_argument(
             "Invalid DenseLayer input size"
         );
     }
+
+    lastInput = input;
 
     return weights * input + bias;
 }
@@ -66,4 +67,63 @@ void DenseLayer::setBias(
 ) {
 
     bias[output] = value;
+}
+
+Vector DenseLayer::backward(
+    const Vector& outputGradient,
+    double learningRate
+) {
+
+    if (
+        outputGradient.size()
+        != outputSize
+    ) {
+
+        throw std::invalid_argument(
+            "Invalid DenseLayer gradient size"
+        );
+    }
+
+    Vector inputGradient(
+        inputSize
+    );
+
+    inputGradient.fill(0.0);
+
+
+    for (
+        std::size_t output = 0;
+        output < outputSize;
+        ++output
+    ) {
+
+        for (
+            std::size_t input = 0;
+            input < inputSize;
+            ++input
+        ) {
+
+            double weightGradient =
+                outputGradient[output]
+                * lastInput[input];
+
+
+            inputGradient[input] +=
+                weights(output, input)
+                * outputGradient[output];
+
+
+            weights(output, input) -=
+                learningRate
+                * weightGradient;
+        }
+
+
+        bias[output] -=
+            learningRate
+            * outputGradient[output];
+    }
+
+
+    return inputGradient;
 }

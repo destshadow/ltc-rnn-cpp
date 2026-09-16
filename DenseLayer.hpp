@@ -15,6 +15,8 @@ private:
     Matrix weights;
     Vector bias;
 
+    Vector lastInput;
+
 public:
 
     DenseLayer(
@@ -24,7 +26,12 @@ public:
 
     Vector forward(
         const Vector& input
-    ) const;
+    );
+
+    Vector backward(
+        const Vector& outputGradient,
+        double learningRate
+    );
 
     std::size_t getInputSize() const;
     std::size_t getOutputSize() const;
