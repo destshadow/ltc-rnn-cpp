@@ -30,6 +30,8 @@ make run
 
 La perdita diminuisce e la predizione finale si avvicina all'obiettivo. `LTCNetwork` permette anche di concatenare più livelli LTC con dimensioni compatibili.
 
+Ogni chiamata a `LTCLayer::forward` registra i dati del passo nella cronologia del livello. `clearHistory()` la svuota; `LTCNetwork::resetSequence()` azzera sia gli stati ricorrenti sia le cronologie dei livelli. La cronologia non viene ancora usata per aggiornare i pesi LTC.
+
 ## Struttura
 
 | File | Contenuto |

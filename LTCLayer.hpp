@@ -4,6 +4,20 @@
 
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include <vector>
+
+struct LTCStepCache {
+
+    Vector input;
+
+    Vector previousState;
+
+    Vector target;
+
+    Vector tau;
+
+    Vector derivative;
+};
 
 class LTCLayer {
 
@@ -21,6 +35,8 @@ private:
     Vector tauBias;
 
     Vector hiddenState;
+
+    std::vector<LTCStepCache> history;
 
     double dt;
 
@@ -89,6 +105,9 @@ public:
 
     std::size_t getInputSize() const;
     std::size_t getHiddenSize() const;
+
+    void clearHistory();
+    std::size_t getHistorySize() const;
 
 
 };

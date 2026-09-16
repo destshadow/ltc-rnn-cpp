@@ -141,3 +141,17 @@ double LTCNetwork::trainStep(
 
     return loss;
 }
+
+void LTCNetwork::clearHistory() {
+
+    for (LTCLayer& layer : layers) {
+
+        layer.clearHistory();
+    }
+}
+
+void LTCNetwork::resetSequence() {
+
+    resetState();
+    clearHistory();
+}

@@ -44,4 +44,8 @@ public:
     void resetState();
 
     std::size_t layerCount() const;
+
+    void clearHistory();
+
+    void resetSequence();
 };

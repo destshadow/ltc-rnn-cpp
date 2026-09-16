@@ -133,15 +133,16 @@ Vector LTCLayer::forward(
     const Vector& input
 ) {
 
-    if (
-        input.size()
-        != inputSize
-    ) {
+    if (input.size() != inputSize) {
 
         throw std::invalid_argument(
             "Invalid LTC input size"
         );
     }
+
+
+    Vector previousState =
+        hiddenState;
 
 
     Vector target =
@@ -157,6 +158,29 @@ Vector LTCLayer::forward(
             target,
             tau
         );
+
+
+    LTCStepCache cache;
+
+    cache.input =
+        input;
+
+    cache.previousState =
+        previousState;
+
+    cache.target =
+        target;
+
+    cache.tau =
+        tau;
+
+    cache.derivative =
+        derivative;
+
+
+    history.push_back(
+        cache
+    );
 
 
     hiddenState =
@@ -252,4 +276,14 @@ std::size_t LTCLayer::getInputSize() const {
 std::size_t LTCLayer::getHiddenSize() const {
 
     return hiddenSize;
+}
+
+void LTCLayer::clearHistory() {
+
+    history.clear();
+}
+
+std::size_t LTCLayer::getHistorySize() const {
+
+    return history.size();
 }
