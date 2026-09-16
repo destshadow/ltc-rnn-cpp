@@ -4,6 +4,7 @@
 
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include "Optimizer.hpp"
 
 class DenseLayer {
 
@@ -30,7 +31,7 @@ public:
 
     Vector backward(
         const Vector& outputGradient,
-        double learningRate
+        Optimizer& optimizer
     );
 
     std::size_t getInputSize() const;

@@ -39,6 +39,7 @@ Ogni chiamata a `LTCLayer::forward` registra i dati del passo nella cronologia d
 | `main.cpp` | Esempio di addestramento su due sequenze |
 | `DenseLayer.hpp/.cpp` | Livello denso con forward e aggiornamento dei parametri |
 | `Loss.hpp/.cpp` | Perdita quadratica media e relativo gradiente |
+| `Optimizer.hpp`, `SGDOptimizer.hpp/.cpp` | Interfaccia di aggiornamento dei parametri e discesa del gradiente |
 | `LTCNetwork.hpp/.cpp` | Sequenza di livelli LTC con uscita densa opzionale |
 | `LTCLayer.hpp/.cpp` | Livello ricorrente con costanti di tempo variabili |
 | `LTCNeuron.hpp/.cpp` | Neurone con stato e costante di tempo variabile |

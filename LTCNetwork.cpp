@@ -1,5 +1,6 @@
 #include "LTCNetwork.hpp"
 #include "Loss.hpp"
+#include "SGDOptimizer.hpp"
 
 #include <stdexcept>
 
@@ -104,6 +105,7 @@ double LTCNetwork::trainStep(
     const Vector& target,
     double learningRate
 ) {
+    SGDOptimizer optimizer(learningRate);
 
     if (!outputLayer.has_value()) {
 
@@ -134,7 +136,7 @@ double LTCNetwork::trainStep(
     Vector gradientToLTC =
         outputLayer->backward(
             lossGradient,
-            learningRate
+            optimizer
         );
 
         (void)gradientToLTC;
@@ -159,7 +161,7 @@ void LTCNetwork::resetSequence() {
 double LTCNetwork::trainSequence(
     const std::vector<Vector>& sequence,
     const Vector& target,
-    double learningRate
+    Optimizer& optimizer
 ) {
 
     if (layers.empty()) {
@@ -233,7 +235,7 @@ double LTCNetwork::trainSequence(
     Vector finalLTCGradient =
         outputLayer->backward(
             lossGradient,
-            learningRate
+            optimizer
         );
 
 
@@ -281,7 +283,7 @@ double LTCNetwork::trainSequence(
         timeGradients =
             layers[layerIndex].backward(
                 timeGradients,
-                learningRate
+                optimizer
             );
     }
 

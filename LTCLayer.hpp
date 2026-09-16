@@ -5,6 +5,7 @@
 #include "Vector.hpp"
 #include "Matrix.hpp"
 #include <vector>
+#include "Optimizer.hpp"
 
 struct LTCStepCache {
 
@@ -39,6 +40,7 @@ private:
     std::vector<LTCStepCache> history;
 
     double dt;
+    double gradientClip;
 
     Vector computeTarget(
         const Vector& input
@@ -63,7 +65,8 @@ public:
     LTCLayer(
         std::size_t inputSize,
         std::size_t hiddenSize,
-        double dt
+        double dt,
+        double gradientClip = 1.0
     );
 
     Vector forward(
@@ -116,7 +119,7 @@ public:
 
     std::vector<Vector> backward(
         const std::vector<Vector>& outputGradients,
-        double learningRate
+        Optimizer& optimizer
     );
 
 

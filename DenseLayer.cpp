@@ -71,7 +71,7 @@ void DenseLayer::setBias(
 
 Vector DenseLayer::backward(
     const Vector& outputGradient,
-    double learningRate
+    Optimizer& optimizer
 ) {
 
     if (
@@ -113,15 +113,15 @@ Vector DenseLayer::backward(
                 * outputGradient[output];
 
 
-            weights(output, input) -=
-                learningRate
-                * weightGradient;
+            weights(output, input) = optimizer.update(
+                weights(output, input), weightGradient
+            );
         }
 
 
-        bias[output] -=
-            learningRate
-            * outputGradient[output];
+        bias[output] = optimizer.update(
+            bias[output], outputGradient[output]
+        );
     }
 
 

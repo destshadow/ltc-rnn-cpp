@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "LTCNetwork.hpp"
+#include "SGDOptimizer.hpp"
 
 
 int main() {
@@ -54,8 +55,7 @@ int main() {
     targetDecreasing[0] = -1.0;
 
 
-    double learningRate =
-        0.01;
+    SGDOptimizer optimizer(0.01);
 
 
     for (
@@ -68,7 +68,7 @@ int main() {
             network.trainSequence(
                 increasing,
                 targetIncreasing,
-                learningRate
+                optimizer
             );
 
 
@@ -76,7 +76,7 @@ int main() {
             network.trainSequence(
                 decreasing,
                 targetDecreasing,
-                learningRate
+                optimizer
             );
 
 

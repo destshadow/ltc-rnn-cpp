@@ -9,7 +9,8 @@
 LTCLayer::LTCLayer(
     std::size_t inputSize,
     std::size_t hiddenSize,
-    double dt
+    double dt,
+    double gradientClip
 )
     : inputSize(inputSize),
       hiddenSize(hiddenSize),
@@ -40,7 +41,14 @@ LTCLayer::LTCLayer(
 
       hiddenState(hiddenSize),
 
-      dt(dt) {
+      dt(dt),
+      gradientClip(gradientClip) {
+    if (gradientClip <= 0.0) {
+        throw std::invalid_argument(
+            "gradientClip must be greater than zero"
+        );
+    }
+
     Initializer::randomize(inputWeights, -0.5, 0.5);
     Initializer::randomize(recurrentWeights, -0.5, 0.5);
     Initializer::randomize(tauInputWeights, -0.5, 0.5);
@@ -276,7 +284,7 @@ std::size_t LTCLayer::getHistorySize() const {
 
 std::vector<Vector> LTCLayer::backward(
     const std::vector<Vector>& outputGradients,
-    double learningRate
+    Optimizer& optimizer
 ) {
 
     if (
@@ -593,17 +601,31 @@ std::vector<Vector> LTCLayer::backward(
             input < inputSize;
             ++input
         ) {
+
             const double gradient = clipGradient(
-                inputWeightGradients(neuron, input), 1.0
+                inputWeightGradients(neuron, input), gradientClip
             );
-            inputWeights(neuron, input) -=
-                learningRate * gradient;
+
+            inputWeights(
+                    neuron,
+                    input
+                ) =
+                    optimizer.update(
+                        inputWeights(
+                            neuron,
+                            input
+                        ),
+                        gradient
+                    );
 
             const double tauGradient = clipGradient(
-                tauInputWeightGradients(neuron, input), 1.0
+                tauInputWeightGradients(neuron, input), gradientClip
             );
-            tauInputWeights(neuron, input) -=
-                learningRate * tauGradient;
+            tauInputWeights(neuron, input) =
+                optimizer.update(
+                    tauInputWeights(neuron, input),
+                    tauGradient
+                );
         }
 
 
@@ -614,23 +636,35 @@ std::vector<Vector> LTCLayer::backward(
         ) {
 
             const double gradient = clipGradient(
-                recurrentWeightGradients(neuron, previousNeuron), 1.0
+                recurrentWeightGradients(neuron, previousNeuron),
+                gradientClip
             );
-            recurrentWeights(neuron, previousNeuron) -=
-                learningRate * gradient;
+            recurrentWeights(neuron, previousNeuron) =
+                optimizer.update(
+                    recurrentWeights(neuron, previousNeuron),
+                    gradient
+                );
 
             const double tauGradient = clipGradient(
-                tauRecurrentWeightGradients(neuron, previousNeuron), 1.0
+                tauRecurrentWeightGradients(neuron, previousNeuron),
+                gradientClip
             );
-            tauRecurrentWeights(neuron, previousNeuron) -=
-                learningRate * tauGradient;
+            tauRecurrentWeights(neuron, previousNeuron) =
+                optimizer.update(
+                    tauRecurrentWeights(neuron, previousNeuron),
+                    tauGradient
+                );
         }
 
-        bias[neuron] -= learningRate * clipGradient(
-            biasGradients[neuron], 1.0
+
+        bias[neuron] = optimizer.update(
+            bias[neuron],
+            clipGradient(biasGradients[neuron], gradientClip)
         );
-        tauBias[neuron] -= learningRate * clipGradient(
-            tauBiasGradients[neuron], 1.0
+
+        tauBias[neuron] = optimizer.update(
+            tauBias[neuron],
+            clipGradient(tauBiasGradients[neuron], gradientClip)
         );
     }
 

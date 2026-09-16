@@ -52,7 +52,7 @@ public:
     double trainSequence(
         const std::vector<Vector>& sequence,
         const Vector& target,
-        double learningRate
+        Optimizer& optimizer
     );
 
     Vector predictSequence(
