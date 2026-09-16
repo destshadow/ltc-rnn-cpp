@@ -30,7 +30,7 @@ Per compilare ed eseguire i test dell'ordine temporale:
 make test
 ```
 
-`TemporalOrderTest.cpp` allena la rete sulle due sequenze dell'esempio e controlla che le relative predizioni superino le soglie `0.8` e `-0.8`. `general1.cpp` allena su sequenze crescenti e decrescenti con rumore e richiede almeno il 95% di classificazioni corrette su 200 nuove sequenze con rumore. Il rumore usa un seme fisso per rendere ripetibili i campioni; i pesi iniziali restano casuali.
+`TemporalOrderTest.cpp` allena la rete sulle due sequenze dell'esempio e controlla che le relative predizioni superino le soglie `0.8` e `-0.8`. `GeneralizationTest.cpp` allena su sequenze crescenti e decrescenti con rumore e richiede almeno il 95% di classificazioni corrette su 200 nuove sequenze con rumore. Il rumore usa un seme fisso per rendere ripetibili i campioni; i pesi iniziali restano casuali.
 
 ## Come funziona l'esempio
 

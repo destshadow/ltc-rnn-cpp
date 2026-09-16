@@ -6,7 +6,7 @@ TARGET := main
 TEST_TARGET := temporal_order_test
 TEST_SOURCES := $(filter-out main.cpp,$(SOURCES)) tests/TemporalOrderTest.cpp
 GENERAL_TEST_TARGET := generalization_test
-GENERAL_TEST_SOURCES := $(filter-out main.cpp,$(SOURCES)) tests/general1.cpp
+GENERAL_TEST_SOURCES := $(filter-out main.cpp,$(SOURCES)) tests/GeneralizationTest.cpp
 
 .PHONY: all run test clean
 
