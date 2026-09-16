@@ -24,13 +24,13 @@ make run
 
 `make clean` rimuove l'eseguibile generato.
 
-Per compilare ed eseguire il test dell'ordine temporale:
+Per compilare ed eseguire i test dell'ordine temporale:
 
 ```bash
 make test
 ```
 
-Il test allena la rete sulle due sequenze dell'esempio e controlla che le relative predizioni superino le soglie `0.8` e `-0.8`. I pesi iniziali sono casuali e il test non verifica sequenze mai viste durante l'addestramento.
+`TemporalOrderTest.cpp` allena la rete sulle due sequenze dell'esempio e controlla che le relative predizioni superino le soglie `0.8` e `-0.8`. `general1.cpp` allena su sequenze crescenti e decrescenti con rumore e richiede almeno il 95% di classificazioni corrette su 200 nuove sequenze con rumore. Il rumore usa un seme fisso per rendere ripetibili i campioni; i pesi iniziali restano casuali.
 
 ## Come funziona l'esempio
 

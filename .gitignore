@@ -1,6 +1,7 @@
 # Build output
 main
 temporal_order_test
+generalization_test
 stato
 rnn
 *.exe
