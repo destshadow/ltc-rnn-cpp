@@ -3,6 +3,16 @@
 #include <cmath>
 
 
+namespace {
+
+double sigmoid(double x) {
+
+    return 1.0 / (1.0 + std::exp(-x));
+}
+
+}
+
+
 LTCNeuron::LTCNeuron(
     double inputWeight,
     double recurrentWeight,
@@ -26,7 +36,10 @@ LTCNeuron::LTCNeuron(
       dt(dt) {
 }
 
-double LTCNeuron::forward(double input) {
+
+double LTCNeuron::computeTarget(
+    double input
+) const {
 
     double weightedInput =
         inputWeight * input;
@@ -39,37 +52,13 @@ double LTCNeuron::forward(double input) {
         + recurrentContribution
         + bias;
 
-    double target =
-        std::tanh(combined);
-
-    double tau =
-        computeTau(input);
-
-    double derivative =
-        (target - state) / tau;
-
-    state =
-        state + dt * derivative;
-
-    return state;
+    return std::tanh(combined);
 }
 
-double LTCNeuron::getState() const {
 
-    return state;
-}
-
-void LTCNeuron::resetState() {
-
-    state = 0.0;
-}
-
-double sigmoid(double x) {
-
-    return 1.0 / (1.0 + std::exp(-x));
-}
-
-double LTCNeuron::computeTau(double input) const {
+double LTCNeuron::computeTau(
+    double input
+) const {
 
     double value =
         tauInputWeight * input
@@ -77,4 +66,48 @@ double LTCNeuron::computeTau(double input) const {
         + tauBias;
 
     return 1.0 + sigmoid(value);
+}
+
+
+double LTCNeuron::computeDerivative(
+    double target,
+    double tau
+) const {
+
+    return (target - state) / tau;
+}
+
+
+double LTCNeuron::forward(
+    double input
+) {
+
+    double target =
+        computeTarget(input);
+
+    double tau =
+        computeTau(input);
+
+    double derivative =
+        computeDerivative(
+            target,
+            tau
+        );
+
+    state =
+        state + dt * derivative;
+
+    return state;
+}
+
+
+double LTCNeuron::getState() const {
+
+    return state;
+}
+
+
+void LTCNeuron::resetState() {
+
+    state = 0.0;
 }

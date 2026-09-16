@@ -16,7 +16,14 @@ private:
 
     double dt;
 
+    double computeTarget(double input) const;
+
     double computeTau(double input) const;
+
+    double computeDerivative(
+        double target,
+        double tau
+    ) const;
 
 public:
 
