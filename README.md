@@ -2,9 +2,9 @@
 
 Un piccolo progetto didattico in C++17 per esplorare neuroni con stato, reti ricorrenti e una semplice dinamica ispirata ai *Liquid Time-Constant networks* (LTC).
 
-Il programma attuale simula un singolo neurone `LTCNeuron`: riceve un impulso per i primi cinque passi e mostra come evolve il suo stato nei passi successivi. Il progetto contiene anche una classe `RNNLayer` e le operazioni di base su vettori e matrici, pronte per esperimenti successivi.
+Il programma attuale simula una `LTCLayer` con due neuroni: riceve un impulso per i primi cinque passi e mostra come evolvono i due stati nei passi successivi. Il progetto contiene anche un neurone `LTCNeuron` singolo, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
 
-> Progetto sperimentale: il codice non include addestramento, gestione di dataset o una rete LTC completa.
+> Progetto sperimentale: il codice non include addestramento o gestione di dataset.
 
 ## Compilazione ed esecuzione
 
@@ -26,19 +26,20 @@ make run
 
 ## Come funziona l'esempio
 
-`main.cpp` crea un `LTCNeuron` con stato iniziale pari a zero. A ogni passo `forward(input)`:
+`main.cpp` crea una `LTCLayer` con un input e due neuroni, entrambi con stato iniziale pari a zero. A ogni passo `forward(input)`:
 
 1. combina l'input corrente con lo stato precedente e applica `tanh` per ottenere un valore obiettivo;
-2. calcola una costante di tempo variabile `tau = 1 + sigmoid(w_x * input + w_h * state + b_tau)`;
-3. aggiorna lo stato con `state += dt * (target - state) / tau`.
+2. calcola per ciascun neurone una costante di tempo variabile `tau = 1 + sigmoid(W_tau_x * input + W_tau_h * state + b_tau)`;
+3. aggiorna ogni stato con `state += dt * (target - state) / tau`.
 
-Con i parametri presenti in `main.cpp`, l'input vale `1` nei primi cinque passi e `0` nei successivi quindici. L'output stampa passo, input e stato del neurone.
+Con i parametri presenti in `main.cpp`, l'input vale `1` nei primi cinque passi e `0` nei successivi quindici. L'output stampa passo, input e stati `h0` e `h1`.
 
 ## Struttura
 
 | File | Contenuto |
 | --- | --- |
-| `main.cpp` | Esempio eseguibile del neurone LTC |
+| `main.cpp` | Esempio eseguibile del livello LTC |
+| `LTCLayer.hpp/.cpp` | Livello ricorrente con costanti di tempo variabili |
 | `LTCNeuron.hpp/.cpp` | Neurone con stato e costante di tempo variabile |
 | `RNNLayer.hpp/.cpp` | Livello ricorrente con pesi, bias e stato nascosto |
 | `Vector.hpp/.cpp` | Vettore di `double` e operazioni aritmetiche |
