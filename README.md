@@ -2,9 +2,9 @@
 
 Un piccolo progetto didattico in C++17 per esplorare neuroni con stato, reti ricorrenti e una semplice dinamica ispirata ai *Liquid Time-Constant networks* (LTC).
 
-Il programma attuale mostra come una `LTCLayer` registra la cronologia dei passi. Il progetto contiene anche un neurone `LTCNeuron`, una `LTCNetwork` che combina più livelli LTC, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
+Il programma attuale confronta una sequenza crescente e una decrescente con una `LTCNetwork`. Il progetto contiene anche un neurone `LTCNeuron`, una classe `RNNLayer` e le operazioni di base su vettori e matrici.
 
-> Progetto sperimentale: `trainStep` aggiorna solo il livello denso di uscita; non addestra i livelli LTC né gestisce dataset.
+> Progetto sperimentale: `trainSequence` propaga gradienti attraverso i passi e aggiorna i livelli LTC e l'uscita densa. L'esempio attuale non raggiunge ancora una buona distinzione tra le due sequenze.
 
 ## Compilazione ed esecuzione
 
@@ -26,17 +26,17 @@ make run
 
 ## Come funziona l'esempio
 
-`main.cpp` crea una `LTCLayer` con un input e tre neuroni. Esegue dieci passi con input da `0` a `0.9` e stampa quanti passi sono stati registrati nella cronologia dopo ogni chiamata a `forward`.
+`main.cpp` crea una `LTCNetwork` con un livello LTC da sei neuroni e un'uscita densa. Allena la rete per distinguere quattro valori crescenti da quattro valori decrescenti, poi stampa le due predizioni.
 
 `LTCNetwork` permette di concatenare più livelli LTC con dimensioni compatibili e di aggiungere un livello denso di uscita opzionale. Il suo `trainStep` aggiorna solo il livello denso di uscita.
 
-Ogni chiamata a `LTCLayer::forward` registra i dati del passo nella cronologia del livello. `clearHistory()` la svuota; `LTCNetwork::resetSequence()` azzera sia gli stati ricorrenti sia le cronologie dei livelli. La cronologia non viene ancora usata per aggiornare i pesi LTC.
+Ogni chiamata a `LTCLayer::forward` registra i dati del passo nella cronologia del livello. `clearHistory()` la svuota; `LTCNetwork::resetSequence()` azzera sia gli stati ricorrenti sia le cronologie. `trainSequence()` usa la cronologia per aggiornare i pesi LTC.
 
 ## Struttura
 
 | File | Contenuto |
 | --- | --- |
-| `main.cpp` | Esempio della cronologia dei passi di `LTCLayer` |
+| `main.cpp` | Esempio di addestramento su due sequenze |
 | `DenseLayer.hpp/.cpp` | Livello denso con forward e aggiornamento dei parametri |
 | `Loss.hpp/.cpp` | Perdita quadratica media e relativo gradiente |
 | `LTCNetwork.hpp/.cpp` | Sequenza di livelli LTC con uscita densa opzionale |
@@ -59,4 +59,4 @@ g++ -std=c++17 neurone_con_stato_interno/rnn.cpp -o rnn
 
 ## Stato del progetto
 
-Il codice è pensato per apprendere e sperimentare. `RNNLayer` implementa un aggiornamento ricorrente con `tanh`; non usa la dinamica a costante di tempo variabile di `LTCNeuron`. Non ci sono ancora API per addestrare i pesi dei livelli LTC né controlli completi sugli indici di vettori e matrici.
+Il codice è pensato per apprendere e sperimentare. `RNNLayer` implementa un aggiornamento ricorrente con `tanh`; non usa la dinamica a costante di tempo variabile di `LTCNeuron`. Non ci sono ancora controlli completi sugli indici di vettori e matrici.

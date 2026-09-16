@@ -109,5 +109,10 @@ public:
     void clearHistory();
     std::size_t getHistorySize() const;
 
+    std::vector<Vector> backward(
+        const std::vector<Vector>& outputGradients,
+        double learningRate
+    );
+
 
 };

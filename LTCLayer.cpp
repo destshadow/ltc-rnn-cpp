@@ -160,27 +160,13 @@ Vector LTCLayer::forward(
         );
 
 
-    LTCStepCache cache;
-
-    cache.input =
-        input;
-
-    cache.previousState =
-        previousState;
-
-    cache.target =
-        target;
-
-    cache.tau =
-        tau;
-
-    cache.derivative =
-        derivative;
-
-
-    history.push_back(
-        cache
-    );
+    history.push_back({
+        input,
+        previousState,
+        target,
+        tau,
+        derivative
+    });
 
 
     hiddenState =
@@ -286,4 +272,299 @@ void LTCLayer::clearHistory() {
 std::size_t LTCLayer::getHistorySize() const {
 
     return history.size();
+}
+
+std::vector<Vector> LTCLayer::backward(
+    const std::vector<Vector>& outputGradients,
+    double learningRate
+) {
+
+    if (
+        outputGradients.size()
+        != history.size()
+    ) {
+        throw std::invalid_argument(
+            "Gradient history size mismatch"
+        );
+    }
+
+    if (history.empty()) {
+        return {};
+    }
+
+    Matrix inputWeightGradients(
+        hiddenSize,
+        inputSize
+    );
+
+    Matrix recurrentWeightGradients(
+        hiddenSize,
+        hiddenSize
+    );
+
+    Vector biasGradients(
+        hiddenSize
+    );
+
+    std::vector<Vector> inputGradients;
+
+    inputGradients.reserve(
+        history.size()
+    );
+
+    for (
+        std::size_t t = 0;
+        t < history.size();
+        ++t
+    ) {
+
+        inputGradients.emplace_back(
+            inputSize
+        );
+    }
+
+
+    Vector futureStateGradient(
+        hiddenSize
+    );
+
+    futureStateGradient.fill(
+        0.0
+    );
+
+
+    for (
+        std::size_t t = history.size();
+        t-- > 0;
+    ) {
+
+        const LTCStepCache& cache =
+            history[t];
+
+
+        Vector stateGradient(
+            hiddenSize
+        );
+
+        for (
+            std::size_t i = 0;
+            i < hiddenSize;
+            ++i
+        ) {
+
+            stateGradient[i] =
+                outputGradients[t][i]
+                + futureStateGradient[i];
+        }
+
+
+        Vector targetGradient(
+            hiddenSize
+        );
+
+        for (
+            std::size_t i = 0;
+            i < hiddenSize;
+            ++i
+        ) {
+
+            targetGradient[i] =
+                stateGradient[i]
+                * dt
+                / cache.tau[i];
+        }
+
+
+        Vector combinedGradient(
+            hiddenSize
+        );
+
+        for (
+            std::size_t i = 0;
+            i < hiddenSize;
+            ++i
+        ) {
+
+            double tanhGradient =
+                1.0
+                - cache.target[i]
+                * cache.target[i];
+
+            combinedGradient[i] =
+                targetGradient[i]
+                * tanhGradient;
+        }
+
+        for (
+            std::size_t neuron = 0;
+            neuron < hiddenSize;
+            ++neuron
+        ) {
+
+            for (
+                std::size_t input = 0;
+                input < inputSize;
+                ++input
+            ) {
+
+                inputWeightGradients(
+                    neuron,
+                    input
+                ) +=
+                    combinedGradient[neuron]
+                    * cache.input[input];
+            }
+
+
+            for (
+                std::size_t previousNeuron = 0;
+                previousNeuron < hiddenSize;
+                ++previousNeuron
+            ) {
+
+                recurrentWeightGradients(
+                    neuron,
+                    previousNeuron
+                ) +=
+                    combinedGradient[neuron]
+                    * cache.previousState[
+                        previousNeuron
+                    ];
+            }
+
+
+            biasGradients[neuron] +=
+                combinedGradient[neuron];
+        }
+
+
+        for (
+            std::size_t input = 0;
+            input < inputSize;
+            ++input
+        ) {
+
+            double gradient = 0.0;
+
+            for (
+                std::size_t neuron = 0;
+                neuron < hiddenSize;
+                ++neuron
+            ) {
+
+                gradient +=
+                    inputWeights(
+                        neuron,
+                        input
+                    )
+                    * combinedGradient[
+                        neuron
+                    ];
+            }
+
+            inputGradients[t][input] =
+                gradient;
+        }
+
+
+        Vector previousStateGradient(
+            hiddenSize
+        );
+
+        for (
+            std::size_t neuron = 0;
+            neuron < hiddenSize;
+            ++neuron
+        ) {
+
+            previousStateGradient[neuron] =
+                stateGradient[neuron]
+                * (
+                    1.0
+                    - dt
+                    / cache.tau[neuron]
+                );
+        }
+
+
+        for (
+            std::size_t previousNeuron = 0;
+            previousNeuron < hiddenSize;
+            ++previousNeuron
+        ) {
+
+            for (
+                std::size_t neuron = 0;
+                neuron < hiddenSize;
+                ++neuron
+            ) {
+
+                previousStateGradient[
+                    previousNeuron
+                ] +=
+                    recurrentWeights(
+                        neuron,
+                        previousNeuron
+                    )
+                    * combinedGradient[
+                        neuron
+                    ];
+            }
+        }
+
+
+        futureStateGradient =
+            previousStateGradient;
+    }
+
+
+    for (
+        std::size_t neuron = 0;
+        neuron < hiddenSize;
+        ++neuron
+    ) {
+
+        for (
+            std::size_t input = 0;
+            input < inputSize;
+            ++input
+        ) {
+
+            inputWeights(
+                neuron,
+                input
+            ) -=
+                learningRate
+                * inputWeightGradients(
+                    neuron,
+                    input
+                );
+        }
+
+
+        for (
+            std::size_t previousNeuron = 0;
+            previousNeuron < hiddenSize;
+            ++previousNeuron
+        ) {
+
+            recurrentWeights(
+                neuron,
+                previousNeuron
+            ) -=
+                learningRate
+                * recurrentWeightGradients(
+                    neuron,
+                    previousNeuron
+                );
+        }
+
+
+        bias[neuron] -=
+            learningRate
+            * biasGradients[neuron];
+    }
+
+
+    return inputGradients;
 }

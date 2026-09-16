@@ -48,4 +48,14 @@ public:
     void clearHistory();
 
     void resetSequence();
+
+    double trainSequence(
+        const std::vector<Vector>& sequence,
+        const Vector& target,
+        double learningRate
+    );
+
+    Vector predictSequence(
+        const std::vector<Vector>& sequence
+    );
 };
