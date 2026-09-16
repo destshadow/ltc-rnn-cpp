@@ -45,6 +45,7 @@ Con i parametri presenti in `main.cpp`, l'input vale `1` nei primi cinque passi 
 | `Vector.hpp/.cpp` | Vettore di `double` e operazioni aritmetiche |
 | `Matrix.hpp/.cpp` | Matrice di `double` e prodotto matrice-vettore |
 | `Activation.hpp/.cpp` | Funzioni di attivazione e derivate |
+| `Initializer.hpp/.cpp` | Inizializzazione casuale di vettori e matrici |
 | `neurone_con_stato_interno/` | Due esempi autonomi per capire lo stato di un neurone |
 | `references/` | I due PDF di riferimento presenti nella cartella originale del progetto |
 

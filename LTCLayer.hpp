@@ -4,6 +4,7 @@
 
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include "Initializer.hpp"
 
 class LTCLayer {
 
